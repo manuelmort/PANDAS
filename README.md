@@ -28,10 +28,20 @@ gtp-panda/
 ├── models/                     # Neural network architectures
 │   ├── GraphTransformer.py     # Graph Transformer implementation
 │   └── ...                     # Additional model files
-├── data/                       # Data loading and preprocessing
-│   ├── panda_dataset.py        # PyTorch Dataset for PANDA challenge
-│   ├── __init__.py             
-│   └── panda_labels.csv        # Ground truth labels
+data/
+├── train.csv                     # full Kaggle metadata
+├── subsets/
+│   ├── train_subset_v1.csv     # v2 and so on
+│   ├── master_download_log.csv # Keep track of data that have used
+│   └── ...
+└── splits/
+    ├── train_split.csv         # Split Training data
+    ├── val_split.csv           # Split Validation Data
+    └── test_split.csv          # Split for Testing Data
+├── scripts/                        # 🔹 Utility and setup scripts
+│   ├── create_subset_csv.py        # Create balanced subset + master log
+│   ├── split_dataset.py            # Generate train/val/test CSVs (Not created)
+│   └── download_subset.sh          # (optional) Kaggle downloader (Not created)
 ├── utils/                      # Utility functions
 │   └── metrics.py              # Evaluation metrics (accuracy, kappa, etc.)
 ├── train_panda.py              # Training script
@@ -135,10 +145,17 @@ Modify in `train_panda.py` or pass as arguments:
 This project uses the PANDA (Prostate cANcer graDe Assessment) challenge dataset. 
 
 **Data Structure:**
-- `data/panda_labels.csv`: Contains slide IDs, ISUP grades, and Gleason scores
-- Expected columns: `image_id`, `isup_grade`, `gleason_score`
+- `data/training.csv`: Contains slide IDs, ISUP grades, and Gleason scores
+- Expected columns: `image_id`, `data_provider`, `isup_grade`, `gleason_score`
 
+The full PANDA dataset (~400 GB) contains over 10,000 high-resolution whole-slide images (WSIs) from two data providers — Radboud University Medical Center and Karolinska Institute — each labeled with an ISUP grade and Gleason score.
+
+PANDA Dataset
 Download the PANDA dataset from [Kaggle](https://www.kaggle.com/c/prostate-cancer-grade-assessment).
+
+Because of the dataset’s large size, this project works with a **smaller, representative subset** that preserves balance across ISUP grades and data providers. 
+
+We used `\scripts\create_subset_csv.py` to split the data into smaller csv files in the order of v#. This is will allow us to essentially grab and download a smalle portion of the data from kaggle and upload to the SCC
 
 ## Metrics
 
