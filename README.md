@@ -17,39 +17,33 @@ Graph Transformer for Prostate cANcer Detection and grAding (GTP-PANDA) - A deep
 
 GTP-PANDA implements a graph-based deep learning approach for prostate cancer detection and Gleason grading from whole slide images (WSI). The framework extracts tissue graphs from histopathology slides and processes them using graph transformer architectures.
 
-## Project Structure
+## Current Project Structure
 
 ```
-gtp-panda/
-├── feature_extractor/          # Graph construction and feature extraction
-│   ├── run.py                  # Main script for feature extraction pipeline
-│   ├── build_graphs.py         # Graph construction from WSI patches
-│   └── config_panda.yaml       # Configuration for feature extraction
-├── models/                     # Neural network architectures
-│   ├── GraphTransformer.py     # Graph Transformer implementation
-│   └── ...                     # Additional model files
-data/
-├── train.csv                     # full Kaggle metadata
-├── subsets/
-│   ├── train_subset_v1.csv     # v2 and so on
-│   ├── master_download_log.csv # Keep track of data that have used
+PANDAS/
+├── feature_extractor/
+├── models/
+│   ├── GraphTransformer.py (model)
 │   └── ...
-└── splits/
-    ├── train_split.csv         # Split Training data
-    ├── val_split.csv           # Split Validation Data
-    └── test_split.csv          # Split for Testing Data
-├── scripts/                        # 🔹 Utility and setup scripts
-│   ├── create_subset_csv.py        # Create balanced subset + master log
-│   ├── split_dataset.py            # Generate train/val/test CSVs (Not created)
-│   └── download_subset.sh          # (optional) Kaggle downloader (Not created)
-├── utils/                      # Utility functions
-│   └── metrics.py              # Evaluation metrics (accuracy, kappa, etc.)
-├── train_panda.py              # Training script
-├── README.md                   # Project documentation
-└── environment.yml             # Conda environment specification (optional)
+├── data/
+│   ├── train.csv
+│   ├── splits/
+│   │   ├── train_split.csv     # 80% of training data
+│   │   └── val_split.csv       # 20% for validation
+│   └── patches/
+│       ├── train_patch_01.csv  # Training data split into
+│       ├── train_patch_02.csv  # 10 equal patches for
+│       ├── ...                 # sequential processing
+│       └── train_patch_10.csv
+├── scripts/
+│   ├── split_train_valid.py    # Script to create 80/20 split
+│   └── patch.py                # Script to create 10 patches
+├── train_panda.py (main script to start model training)
+├── utils/
+│   └── metrics.py (metrics script)
+├── README.md
+└── environment.yml  # (optional)
 ```
-
-## Installation
 
 ### Prerequisites
 
@@ -97,6 +91,7 @@ Edit `config_panda.yaml` to customize:
 
 ### 2. Training
 
+## Place holder
 Train the Graph Transformer model:
 
 ```bash
@@ -140,8 +135,7 @@ Modify in `train_panda.py` or pass as arguments:
 - Model architecture hyperparameters
 - Data augmentation settings
 
-## Dataset
-
+## Dataset (Updated by Manuel Morteo (Manny))
 This project uses the PANDA (Prostate cANcer graDe Assessment) challenge dataset. 
 
 **Data Structure:**
@@ -150,14 +144,74 @@ This project uses the PANDA (Prostate cANcer graDe Assessment) challenge dataset
 
 The full PANDA dataset (~400 GB) contains over 10,000 high-resolution whole-slide images (WSIs) from two data providers — Radboud University Medical Center and Karolinska Institute — each labeled with an ISUP grade and Gleason score.
 
-PANDA Dataset
+### PANDA Dataset
 Download the PANDA dataset from [Kaggle](https://www.kaggle.com/c/prostate-cancer-grade-assessment).
 
-Because of the dataset’s large size, this project works with a **smaller, representative subset** that preserves balance across ISUP grades and data providers. 
+Because of the dataset's large size, this project works with a **smaller, representative subset** that preserves balance across ISUP grades and data providers. 
 
-We used `\scripts\create_subset_csv.py` to split the data into smaller csv files in the order of v#. This is will allow us to essentially grab and download a smalle portion of the data from kaggle and upload to the SCC
+### Data Preparation Pipeline
 
-## Metrics
+1. **Train/Validation Split**: We used `scripts/split_train_valid.py` to split the data into an 80%-20% ratio for our training data and validation data.
+
+2. **Patch Creation**: We then used `scripts/patch.py` to split our training data into 10 patches for easier training sequencing. This approach allows us to:
+   - Download and upload smaller portions of data from Kaggle to the SCC
+   - Manage memory constraints more effectively during training
+   - Process data in manageable chunks within storage quota (I think we get 1TB, not entirely sure.)
+
+**Final Data Structure:**
+```
+PANDAS/
+  data/
+    train.csv
+    splits/
+      train_split.csv     # 80% of training data
+      val_split.csv       # 20% for validation
+    patches/
+      train_patch_01.csv  # Training data split into
+      train_patch_02.csv  # 10 equal patches for
+      ...                 # sequential processing
+      train_patch_10.csv
+```
+
+
+## Created a PANDAS environment on the SCC,
+
+SCC Enviornment:
+ - Modules loaded:
+    1) python3/3.10.12 
+    2) cuda/12.5 
+    3) pytorch/1.13.1
+
+Environment Path: 
+user@scc#\GTP_PANDA\
+    - PANDAS GITHUB
+    - gtp_env -> Python Virtual Enviornment to download necessary modules
+
+Current PANDAS GITHUB REPO
+
+PANDAS/
+├── feature_extractor/
+├── models/
+│   ├── GraphTransformer.py (model)
+│   └── ...
+├── data/
+│   ├── train.csv
+│   ├── splits/
+│   │   ├── train_split.csv     # 80% of training data
+│   │   └── val_split.csv       # 20% for validation
+│   └── patches/
+│       ├── train_patch_01.csv  # Training data split into
+│       ├── train_patch_02.csv  # 10 equal patches for
+│       ├── ...                 # sequential processing
+│       └── train_patch_10.csv
+├── scripts/
+│   ├── split_train_valid.py    # Script to create 80/20 split
+│   └── patch.py                # Script to create 10 patches
+├── train_panda.py (main script to start model training)
+├── utils/
+│   └── metrics.py (metrics script)
+├── README.md
+└── environment.yml  # (optional)
 
 Evaluation metrics implemented in `utils/metrics.py`:
 - Quadratic Weighted Kappa (primary metric)
