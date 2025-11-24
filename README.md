@@ -39,6 +39,9 @@ PANDAS/
 │   ├── split_train_valid.py    # Script to create 80/20 split
 │   └── patch.py                # Script to create 10 patches
 ├── train_panda.py (main script to start model training)
+    src/
+	tile_subsets_wsi.py 	# Patch Extraction for each Subset
+	tile_WSI.py		# Original GTP Tile extraction (Not suitable for PANDA Dataset)
 ├── utils/
 │   └── metrics.py (metrics script)
 ├── README.md
@@ -152,6 +155,24 @@ Because of the dataset's large size, this project works with a **smaller, repres
 ### Data Preparation Pipeline
 
 1. **Train/Validation Split**: We used `scripts/split_train_valid.py` to split the data into an 80%-20% ratio for our training data and validation data.
+
+Output should be: 
+
+```
+After 80/20 split:
+	Training set: 8,492 entries (80%)
+	Validation set: 2,124 entries (20%)
+	
+	Saved train_split.csv
+	Saved val_split.csv
+
+Verification:
+	train_split.csv: 8492 entries
+	val_split.csv: 2124 entries
+	Total: 10616 entries
+```
+
+
 
 2. **Patch Creation**: We then used `scripts/patch.py` to split our training data into 10 patches for easier training sequencing. This approach allows us to:
    - Download and upload smaller portions of data from Kaggle to the SCC

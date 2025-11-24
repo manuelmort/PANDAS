@@ -176,6 +176,9 @@ class TileWorker(Process):
                     # e = sys.exc_info()[0]
                     print(e)
                     self._queue.task_done()
+                finally:
+                    if self._slide is not None:
+                        self._slide.close()
 
     def _get_dz(self, associated=None):
         if associated is not None:
@@ -599,12 +602,17 @@ class DeepZoomStaticTiler(object):
                 limit_bounds, quality, self._Bkg, self._ROIpc).start()
 
     def run(self):
-        self._run_image()
-        if self._with_viewer:
-            for name in self._slide.associated_images:
-                self._run_image(name)
-            self._write_html()
-            self._write_static()
+        try: 
+            self._run_image()
+            if self._with_viewer:
+                for name in self._slide.associated_images:
+                    self._run_image(name)
+                self._write_html()
+                self._write_static()
+        finally:
+            if self.slide is not None:
+                self._slide.close()
+
         self._shutdown()
 
     def _run_image(self, associated=None):

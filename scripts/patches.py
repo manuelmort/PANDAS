@@ -3,9 +3,10 @@ import numpy as np
 import os
 
 # Define paths
-SPLITS_DIR = 'PANDAS/data/splits'
+
+SPLITS_DIR = '../data/splits'
 TRAIN_SPLIT_PATH = os.path.join(SPLITS_DIR, 'train_split.csv')
-PATCHES_DIR = 'PANDAS/data/patches'
+PATCHES_DIR = '../data/patches'
 
 # Read the training split
 print("Loading training data...")
