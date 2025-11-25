@@ -1,0 +1,253 @@
+# GTP-PANDA
+
+Graph Transformer for Prostate cANcer Detection and grAding (GTP-PANDA) - A deep learning framework for analyzing prostate histopathology images using graph-based representations and transformer architectures.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [Training](#training)
+- [Evaluation](#evaluation)
+- [Citation](#citation)
+
+## Overview
+
+GTP-PANDA implements a graph-based deep learning approach for prostate cancer detection and Gleason grading from whole slide images (WSI). The framework extracts tissue graphs from histopathology slides and processes them using graph transformer architectures.
+
+## Current Project Structure
+
+```
+PANDAS/
+├── feature_extractor/
+├── models/
+│   ├── GraphTransformer.py (model)
+│   └── ...
+├── data/
+│   ├── train.csv
+│   ├── splits/
+│   │   ├── train_split.csv     # 80% of training data
+│   │   └── val_split.csv       # 20% for validation
+│   └── patches/
+│       ├── train_patch_01.csv  # Training data split into
+│       ├── train_patch_02.csv  # 10 equal patches for
+│       ├── ...                 # sequential processing
+│       └── train_patch_10.csv
+├── scripts/
+│   ├── split_train_valid.py    # Script to create 80/20 split
+│   └── patch.py                # Script to create 10 patches
+├── train_panda.py (main script to start model training)
+├── utils/
+│   └── metrics.py (metrics script)
+├── README.md
+└── environment.yml  # (optional)
+```
+
+### Prerequisites
+
+- Python 3.8+
+- CUDA-capable GPU (recommended)
+- Conda or pip package manager
+
+### Setup
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/gtp-panda.git
+cd gtp-panda
+```
+
+2. Create and activate the environment:
+
+**Using Conda (recommended):**
+```bash
+conda env create -f environment.yml
+conda activate gtp-panda
+```
+
+**Using pip:**
+```bash
+pip install -r requirements.txt
+```
+
+## Usage
+
+### 1. Feature Extraction and Graph Construction
+
+Extract features and build tissue graphs from whole slide images:
+
+```bash
+cd feature_extractor
+python run.py --config config_panda.yaml
+```
+
+Edit `config_panda.yaml` to customize:
+- Input WSI directories
+- Patch size and magnification
+- Graph construction parameters (k-NN, radius, etc.)
+- Feature extractor backbone
+
+### 2. Training
+
+## Place holder
+Train the Graph Transformer model:
+
+```bash
+python train_panda.py \
+    --data_dir ./data \
+    --graph_dir ./graphs \
+    --epochs 100 \
+    --batch_size 8 \
+    --lr 0.0001
+```
+
+### 3. Evaluation
+
+Evaluate model performance on test set:
+
+```bash
+python train_panda.py \
+    --mode eval \
+    --checkpoint ./checkpoints/best_model.pth \
+    --data_dir ./data
+```
+
+## Configuration
+
+### Feature Extraction (config_panda.yaml)
+
+Key parameters:
+- `wsi_dir`: Path to whole slide images
+- `output_dir`: Directory for saving graphs
+- `patch_size`: Size of extracted patches (e.g., 256)
+- `magnification`: Magnification level (e.g., 20x)
+- `feature_extractor`: Backbone architecture (ResNet, ViT, etc.)
+- `graph_type`: Graph construction method (knn, radius, etc.)
+
+### Training Parameters
+
+Modify in `train_panda.py` or pass as arguments:
+- Learning rate
+- Batch size
+- Number of epochs
+- Model architecture hyperparameters
+- Data augmentation settings
+
+## Dataset (Updated by Manuel Morteo (Manny))
+This project uses the PANDA (Prostate cANcer graDe Assessment) challenge dataset. 
+
+**Data Structure:**
+- `data/training.csv`: Contains slide IDs, ISUP grades, and Gleason scores
+- Expected columns: `image_id`, `data_provider`, `isup_grade`, `gleason_score`
+
+The full PANDA dataset (~400 GB) contains over 10,000 high-resolution whole-slide images (WSIs) from two data providers — Radboud University Medical Center and Karolinska Institute — each labeled with an ISUP grade and Gleason score.
+
+### PANDA Dataset
+Download the PANDA dataset from [Kaggle](https://www.kaggle.com/c/prostate-cancer-grade-assessment).
+
+Because of the dataset's large size, this project works with a **smaller, representative subset** that preserves balance across ISUP grades and data providers. 
+
+### Data Preparation Pipeline
+
+1. **Train/Validation Split**: We used `scripts/split_train_valid.py` to split the data into an 80%-20% ratio for our training data and validation data.
+
+2. **Patch Creation**: We then used `scripts/patch.py` to split our training data into 10 patches for easier training sequencing. This approach allows us to:
+   - Download and upload smaller portions of data from Kaggle to the SCC
+   - Manage memory constraints more effectively during training
+   - Process data in manageable chunks within storage quota (I think we get 1TB, not entirely sure.)
+
+**Final Data Structure:**
+```
+PANDAS/
+  data/
+    train.csv
+    splits/
+      train_split.csv     # 80% of training data
+      val_split.csv       # 20% for validation
+    patches/
+      train_patch_01.csv  # Training data split into
+      train_patch_02.csv  # 10 equal patches for
+      ...                 # sequential processing
+      train_patch_10.csv
+```
+
+
+## Created a PANDAS environment on the SCC,
+
+SCC Enviornment:
+ - Modules loaded:
+    1) python3/3.10.12 
+    2) cuda/12.5 
+    3) pytorch/1.13.1
+
+Environment Path: 
+user@scc#\GTP_PANDA\
+    - PANDAS GITHUB
+    - gtp_env -> Python Virtual Enviornment to download necessary modules
+
+Current PANDAS GITHUB REPO
+
+PANDAS/
+├── feature_extractor/
+├── models/
+│   ├── GraphTransformer.py (model)
+│   └── ...
+├── data/
+│   ├── train.csv
+│   ├── splits/
+│   │   ├── train_split.csv     # 80% of training data
+│   │   └── val_split.csv       # 20% for validation
+│   └── patches/
+│       ├── train_patch_01.csv  # Training data split into
+│       ├── train_patch_02.csv  # 10 equal patches for
+│       ├── ...                 # sequential processing
+│       └── train_patch_10.csv
+├── scripts/
+│   ├── split_train_valid.py    # Script to create 80/20 split
+│   └── patch.py                # Script to create 10 patches
+├── train_panda.py (main script to start model training)
+├── utils/
+│   └── metrics.py (metrics script)
+├── README.md
+└── environment.yml  # (optional)
+
+Evaluation metrics implemented in `utils/metrics.py`:
+- Quadratic Weighted Kappa (primary metric)
+- Accuracy
+- Confusion Matrix
+- Per-class precision/recall
+
+## Model Architecture
+
+The Graph Transformer model (`models/GraphTransformer.py`) implements:
+- Multi-head graph attention layers
+- Positional encodings for spatial information
+- Global pooling for slide-level predictions
+- Classification head for ISUP grade prediction (0-5)
+
+## Contributing
+
+Contributions are welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Submit a pull request with a clear description
+
+## License
+
+This project is licensed under the MIT License - see LICENSE file for details.
+
+## Contact
+
+For questions or issues, please open an issue on GitHub or contact [mmorteo@bu.edu].
+
+## Acknowledgments
+
+- PANDA Challenge organizers
+- Graph neural network and transformer architecture references
+- Open-source libraries used in this project
+
+---
+
+**Note:** Update paths, URLs, and contact information according to your specific implementation.
