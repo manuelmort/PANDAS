@@ -1,0 +1,25 @@
+# config.yaml - MINIMAL FIXES ONLY
+
+batch_size: 128  # Reduced from 256
+epochs: 100  # Increased from 3
+eval_every_n_epochs: 10
+fine_tune_from: ''
+log_every_n_steps: 100  # Reduced logging overhead
+weight_decay: 1e-6  # Fixed from 10e-6
+fp16_precision: True  # CRITICAL: 2x speedup
+n_gpu: 2
+gpu_ids: [0, 1]
+
+model:
+  out_dim: 512
+  base_model: "resnet18"
+
+dataset:
+  s: 1.0
+  input_shape: (512, 512, 3)  # Changed from 224 - use native tile size
+  num_workers: 0  # CRITICAL: Fix multiprocessing errors
+  valid_size: 0.1
+
+loss:
+  temperature: 0.5
+  use_cosine_similarity: True
