@@ -79,12 +79,11 @@ Using a fixed window to slide over a subset of Whole Slide Images from our datas
 
 We keep the tiles that are "informative". This will create a patch folder of all the "relevant" tiles.
 
-
 ##### PATCH extraction or tiling -> each WSI with an 85% threshold since our tissues are light pink.
 
-**Tile Size**: 512.  
-**Background Threshold**: 0.85 (85%)   
-**Number of threads used**: 10    
+**Tile Size**: 512  
+**Background Threshold**: 0.85 (85%)  
+**Number of threads used**: 10  
 
 ### Openslide 
 Openslide module/library allows us to read svs/tiff files which is used in our script below.
@@ -92,9 +91,17 @@ Openslide module/library allows us to read svs/tiff files which is used in our s
 #### Instructions:
 To run the code below, you must change the variables which hold paths below to your own data set. These variables are:
 
-**INPUT_DIR**: Path to your dataset.  
-**OUTPUT_DIR**: Output patch for your tiles.  
-**SPLIT_CSV**: CSV containing IDs for the Tiff files within your dataset.
+**INPUT_DIR**: Path to your dataset  
+**OUTPUT_DIR**: Output patch for your tiles  
+**SPLIT_CSV**: CSV containing IDs for the Tiff files within your dataset  
+
+---
+
+### Reconstructed Tile Layout
+
+<p align="center">
+  <img src="./assets/reconstructed_tiles1.png" alt="Reconstructed Tile Image" width="600"/>
+</p>
 
 
 ## tile_one_slide function:  
