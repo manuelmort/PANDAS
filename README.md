@@ -100,7 +100,7 @@ To run the code below, you must change the variables which hold paths below to y
 ### Reconstructed Tile Layout
 
 <p align="center">
-  <img src="./assets/reconstructed_tiles1.png" alt="Reconstructed Tile Image" width="600"/>
+  <img src="./assets/reconstructed_tiles1.png" alt="Reconstructed Tile Image" width="700"/>
 </p>
 
 
