@@ -39,9 +39,6 @@ PANDAS/
 │   ├── split_train_valid.py    # Script to create 80/20 split
 │   └── patch.py                # Script to create 10 patches
 ├── train_panda.py (main script to start model training)
-    src/
-	tile_subsets_wsi.py 	# Patch Extraction for each Subset
-	tile_WSI.py		# Original GTP Tile extraction (Not suitable for PANDA Dataset)
 ├── utils/
 │   └── metrics.py (metrics script)
 ├── README.md
@@ -75,9 +72,44 @@ conda activate gtp-panda
 pip install -r requirements.txt
 ```
 
-## Usage
 
-### 1. Feature Extraction and Graph Construction
+## 1. PANDA Patch Extraction Process
+
+Using a fixed window to slide over a subset of Whole Slide Images from our dataset. This is the tiling process in which we use to filter background. This will extract tissue information while filtering out background noise and saves the "informative" slides.
+
+We keep the tiles that are "informative". This will create a patch folder of all the "relevant" tiles.
+
+
+##### PATCH extraction or tiling -> each WSI with an 85% threshold since our tissues are light pink.
+
+**Tile Size**: 512.  
+**Background Threshold**: 0.85 (85%)   
+**Number of threads used**: 10    
+
+### Openslide 
+Openslide module/library allows us to read svs/tiff files which is used in our script below.
+
+#### Instructions:
+To run the code below, you must change the variables which hold paths below to your own data set. These variables are:
+
+**INPUT_DIR**: Path to your dataset.  
+**OUTPUT_DIR**: Output patch for your tiles.  
+**SPLIT_CSV**: CSV containing IDs for the Tiff files within your dataset.
+
+
+## tile_one_slide function:  
+What each worker does: 
+1. Open a WSI using openslide,
+2. Calculate how many slides the tile will generate
+3. For every (x,y): 
+    - Create a 512x512 tile 
+    - Filters Background
+    - Saves tiles into a folder name of the WSI's ID.
+4. Logs Progress after crate 200 tiles
+5. Outputs how many tiles were saved
+
+
+## 2. Feature Extraction and Graph Construction
 
 Extract features and build tissue graphs from whole slide images:
 
@@ -155,24 +187,6 @@ Because of the dataset's large size, this project works with a **smaller, repres
 ### Data Preparation Pipeline
 
 1. **Train/Validation Split**: We used `scripts/split_train_valid.py` to split the data into an 80%-20% ratio for our training data and validation data.
-
-Output should be: 
-
-```
-After 80/20 split:
-	Training set: 8,492 entries (80%)
-	Validation set: 2,124 entries (20%)
-	
-	Saved train_split.csv
-	Saved val_split.csv
-
-Verification:
-	train_split.csv: 8492 entries
-	val_split.csv: 2124 entries
-	Total: 10616 entries
-```
-
-
 
 2. **Patch Creation**: We then used `scripts/patch.py` to split our training data into 10 patches for easier training sequencing. This approach allows us to:
    - Download and upload smaller portions of data from Kaggle to the SCC
