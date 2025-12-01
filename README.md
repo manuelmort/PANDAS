@@ -100,7 +100,7 @@ To run the code below, you must change the variables which hold paths below to y
 ### Reconstructed Tile Layout
 
 <p align="center">
-  <img src="./assets/reconstructed_tiles1.png" alt="Reconstructed Tile Image" width="700"/>
+  <img src="./assets/reconstructed_tiles1.png" alt="Reconstructed Tile Image" width="900"/>
 </p>
 
 
@@ -116,7 +116,7 @@ What each worker does:
 5. Outputs how many tiles were saved
 
 
-## 2. Feature Extraction and Graph Construction
+## 2. Feature Extraction
 
 Extract features and build tissue graphs from whole slide images:
 
@@ -133,17 +133,11 @@ Edit `config_panda.yaml` to customize:
 
 ### 2. Training
 
-## Place holder
-Train the Graph Transformer model:
+## 3. Graph Construction
+<p align="center">
+  <img src="./assets/GraphReconstructed" alt="Reconstructed Graph of WSI tiles" width="900"/>
+</p>
 
-```bash
-python train_panda.py \
-    --data_dir ./data \
-    --graph_dir ./graphs \
-    --epochs 100 \
-    --batch_size 8 \
-    --lr 0.0001
-```
 
 ### 3. Evaluation
 
