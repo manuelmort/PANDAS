@@ -135,7 +135,7 @@ Edit `config_panda.yaml` to customize:
 
 ## 3. Graph Construction
 <p align="center">
-  <img src="./assets/GraphReconstructed" alt="Reconstructed Graph of WSI tiles" width="900"/>
+  <img src="./assets/GraphReconstructed.png" alt="Reconstructed Graph of WSI tiles" width="900"/>
 </p>
 
 
