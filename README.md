@@ -134,42 +134,65 @@ Edit `config_panda.yaml` to customize:
 ### 2. Training
 
 ## 3. Graph Construction
-<p align="center">
-  <img src="./assets/GraphReconstructed.png" alt="Reconstructed Graph of WSI tiles" width="900"/>
-</p>
 
-
-### 3. Evaluation
-
-Evaluate model performance on test set:
-
+Build graphs from WSI patches using ResNet50 features:
 ```bash
-python train_panda.py \
-    --mode eval \
-    --checkpoint ./checkpoints/best_model.pth \
-    --data_dir ./data
+python build_graphs.py
 ```
+
+**Output:** `./graphs_all/panda/<wsi_id>/`
+- `features.pt`: Node features [num_patches, 2048]
+- `adj_s.pt`: Adjacency matrix (8-connectivity)
+- `c_idx.txt`: Patch coordinates
+
+**Time:** ~2-3 hours for all subsets
+
+---
+
+## 4. Training
+
+Train Graph Transformer with frozen ResNet50 backbone:
+```bash
+python main.py \
+    --n_class 3 \
+    --n_features 2048 \
+    --data_path './feature_extractor/graphs_all' \
+    --train_set './scripts/train_set.txt' \
+    --val_set './scripts/val_set.txt' \
+    --batch_size 8 \
+    --num_epochs 50 \
+    --train \
+    --site panda
+```
+
+**Training time:** ~2 hours (Expected) 
+**Expected QWK:** 0.42-0.48
+
+---
+
+## 5. Evaluation
+```bash
+python main.py \
+    --n_features 2048 \
+    --resume './saved_models/best_model.pth' \
+    --test
+```
+
+---
 
 ## Configuration
 
-### Feature Extraction (config_panda.yaml)
+**Key Parameters:**
+- `--n_features 2048`: Feature dimension (ResNet50)
+- `--batch_size 8`: Batch size
+- `--num_epochs 50`: Training epochs
 
-Key parameters:
-- `wsi_dir`: Path to whole slide images
-- `output_dir`: Directory for saving graphs
-- `patch_size`: Size of extracted patches (e.g., 256)
-- `magnification`: Magnification level (e.g., 20x)
-- `feature_extractor`: Backbone architecture (ResNet, ViT, etc.)
-- `graph_type`: Graph construction method (knn, radius, etc.)
+**Data Format (`train_set.txt`):**
+```
+panda/<wsi_id>	<label>
+```
 
-### Training Parameters
-
-Modify in `train_panda.py` or pass as arguments:
-- Learning rate
-- Batch size
-- Number of epochs
-- Model architecture hyperparameters
-- Data augmentation settings
+Labels: 0 (Background), 1 (Benign), 2 (Cancerous)
 
 ## Dataset (Updated by Manuel Morteo (Manny))
 This project uses the PANDA (Prostate cANcer graDe Assessment) challenge dataset. 
