@@ -68,33 +68,14 @@ Preprocessing pipeline consists of patching, feature extraction and graph constr
   <img src="./assets/preprocessing_image.png" alt="Preprocessing Image" width="901"/l>
 </p>
 
-picture borrowed and slightly edited from [this repo](https://github.com/vkola-lab/tmi2022/blob/main/README.md)
+Imaged borrowed and slightly edited from [this repo](https://github.com/vkola-lab/tmi2022/blob/main/README.md)
 
 
 ## 1. PANDA Patch Extraction Process
 
-Using a fixed window to slide over a subset of Whole Slide Images from our dataset. This is the tiling process in which we use to filter background. This will extract tissue information while filtering out background noise and saves the "informative" slides.
+Extracts tissue patches from WSIs using a sliding window approach, filtering out background and saving only informative tiles.
 
-We keep the tiles that are "informative". This will create a patch folder of all the "relevant" tiles.
-
-##### PATCH extraction or tiling -> each WSI with an 85% threshold since our tissues are light pink.
-
-**Tile Size**: 512  
-**Background Threshold**: 0.85 (85%)  
-**Number of threads used**: 10  
-
-### Openslide 
-Openslide module/library allows us to read svs/tiff files which is used in our script below.
-
-#### Instructions:
-To run the code below, you must change the variables which hold paths below to your own data set. These variables are:
-
-**INPUT_DIR**: Path to your dataset  
-**OUTPUT_DIR**: Output patch for your tiles  
-**SPLIT_CSV**: CSV containing IDs for the Tiff files within your dataset  
-
----
-
+**Notebook:** `/patch_extraction/Patch_Extraction.ipynb`
 ### Reconstructed Tile Layout
 
 <p align="center">
