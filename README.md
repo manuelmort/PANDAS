@@ -15,7 +15,17 @@ Graph Transformer for Prostate cANcer Detection and grAding (GTP-PANDA) - A deep
 
 ## Overview
 
-GTP-PANDA implements a graph-based deep learning approach for prostate cancer detection and Gleason grading from whole slide images (WSI). The framework extracts tissue graphs from histopathology slides and processes them using graph transformer architectures.
+GTP-PANDA implements a graph-based deep learning approach for prostate cancer detection and Gleason grading from whole slide images (WSI), based on [this paper](https://ieeexplore.ieee.org/document/9779215).
+
+The framework build feature-based graphs from histopathology slides and processes them using a Graph-Transformer (GT) network, enabling WSI-level predictions.
+
+### What's Included
+
+- **Full training pipeline** — Feature extraction, graph construction, and model training
+- **Jupyter notebooks** — Step-by-step guides for preprocessing, troubleshooting, and data analysis
+- **Multiple backbones** — Support for Phikon, ImageNet ResNet50, and SimCLR feature extractors
+
+
 
 ## Current Project Structure
 
@@ -51,26 +61,14 @@ PANDAS/
 - CUDA-capable GPU (recommended)
 - Conda or pip package manager
 
-### Setup
+## 0. Data Preprocessing
+Preprocessing pipeline consists of patching, feature extraction and graph construction.
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/gtp-panda.git
-cd gtp-panda
-```
+<p align="center">
+  <img src="./assets/preprocessing_image.png" alt="Preprocessing Image" width="901"/l>
+</p>
 
-2. Create and activate the environment:
-
-**Using Conda (recommended):**
-```bash
-conda env create -f environment.yml
-conda activate gtp-panda
-```
-
-**Using pip:**
-```bash
-pip install -r requirements.txt
-```
+picture borrowed and slightly edited from [this repo](https://github.com/vkola-lab/tmi2022/blob/main/README.md)
 
 
 ## 1. PANDA Patch Extraction Process
@@ -151,34 +149,42 @@ python build_graphs.py
 
 ## 4. Training
 
-Train Graph Transformer with frozen ResNet50 backbone:
+Train Graph Transformer with frozen ResNet50 frozen backbone:
 ```bash
 python main.py \
     --n_class 3 \
     --n_features 2048 \
-    --data_path './feature_extractor/graphs_all' \
+    --data_path './feature_extractor/graphs_all/panda' \
     --train_set './scripts/train_set.txt' \
     --val_set './scripts/val_set.txt' \
     --batch_size 8 \
-    --num_epochs 50 \
     --train \
     --site panda
 ```
-
+Number of epochs specified in options.py  
 **Training time:** ~2 hours (Expected) 
 **Expected QWK:** 0.42-0.48
+
+Submitting Batch Job
+```
+qsub ./train_gtp.sh
+```
+Check Status
+```
+qstat -u $USER
+```
+Check Output
+```
+./logs
+```
 
 ---
 
 ## 5. Evaluation
-```bash
-python main.py \
-    --n_features 2048 \
-    --resume './saved_models/best_model.pth' \
-    --test
-```
+Improvements
+ResNet50 Backbone with Original GTP Baseline ran (main_baseline.py)
+ResNet50 BackBone with GTP Class-Balancing and Cosine Annealing LR -> (main.py)
 
----
 
 ## Configuration
 
@@ -225,7 +231,7 @@ PANDAS/
     splits/
       train_split.csv     # 80% of training data
       val_split.csv       # 20% for validation
-    patches/
+    subsets/
       train_patch_01.csv  # Training data split into
       train_patch_02.csv  # 10 equal patches for
       ...                 # sequential processing
