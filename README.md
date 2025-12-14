@@ -94,11 +94,11 @@ What each worker does:
 4. Logs Progress after crate 200 tiles
 5. Outputs how many tiles were saved
 
-
 ## 2. Feature Extraction
 
-Extract features and build tissue graphs from whole slide images:
+Extract features and build tissue graphs from whole slide images.
 
+### Option A: Using Config File
 ```bash
 cd feature_extractor
 python run.py --config config_panda.yaml
@@ -110,9 +110,14 @@ Edit `config_panda.yaml` to customize:
 - Graph construction parameters (k-NN, radius, etc.)
 - Feature extractor backbone
 
-SimCLR Notebook: ```/feature_extractor/SimCLR Feature Extractor```
-ResNet50 ImageNet pretrained weights ```/feature_extractor/ImageNet ResNet50 Feature Extraction/ResNet50 ImageNet.ipynb```
-Phikon ```/feature_extractor/Phikon Feature Extractor.ipynb```
+### Option B: Using Notebooks
+
+| Backbone | Notebook Location |
+|----------|-------------------|
+| SimCLR | `feature_extractor/SimCLR Feature Extractor.ipynb` |
+| ImageNet ResNet50 | `feature_extractor/ImageNet ResNet50 Feature Extraction/ResNet50 ImageNet.ipynb` |
+| Phikon | `feature_extractor/Phikon Feature Extractor.ipynb` |
+
 ## 3. Graph Construction
 
 Build graphs from WSI patches using ResNet50 features:
