@@ -110,8 +110,9 @@ Edit `config_panda.yaml` to customize:
 - Graph construction parameters (k-NN, radius, etc.)
 - Feature extractor backbone
 
-### 2. Training
-
+SimCLR Notebook: ```/feature_extractor/SimCLR Feature Extractor```
+ResNet50 ImageNet pretrained weights ```/feature_extractor/ImageNet ResNet50 Feature Extraction/ResNet50 ImageNet.ipynb```
+Phikon ```/feature_extractor/Phikon Feature Extractor.ipynb```
 ## 3. Graph Construction
 
 Build graphs from WSI patches using ResNet50 features:
@@ -227,37 +228,6 @@ SCC Enviornment:
     1) python3/3.10.12 
     2) cuda/12.5 
     3) pytorch/1.13.1
-
-Environment Path: 
-user@scc#\GTP_PANDA\
-    - PANDAS GITHUB
-    - gtp_env -> Python Virtual Enviornment to download necessary modules
-
-Current PANDAS GITHUB REPO
-
-PANDAS/
-├── feature_extractor/
-├── models/
-│   ├── GraphTransformer.py (model)
-│   └── ...
-├── data/
-│   ├── train.csv
-│   ├── splits/
-│   │   ├── train_split.csv     # 80% of training data
-│   │   └── val_split.csv       # 20% for validation
-│   └── patches/
-│       ├── train_patch_01.csv  # Training data split into
-│       ├── train_patch_02.csv  # 10 equal patches for
-│       ├── ...                 # sequential processing
-│       └── train_patch_10.csv
-├── scripts/
-│   ├── split_train_valid.py    # Script to create 80/20 split
-│   └── patch.py                # Script to create 10 patches
-├── train_panda.py (main script to start model training)
-├── utils/
-│   └── metrics.py (metrics script)
-├── README.md
-└── environment.yml  # (optional)
 
 Evaluation metrics implemented in `utils/metrics.py`:
 - Quadratic Weighted Kappa (primary metric)
