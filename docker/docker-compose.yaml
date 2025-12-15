@@ -1,0 +1,147 @@
+version: '3.8'
+
+services:
+  # Main inference service
+  gtp-inference:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: gtp-panda:latest
+    container_name: gtp-inference
+    
+    # GPU support
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    
+    # Mount volumes
+    volumes:
+      - ./data/graphs:/data/graphs:ro          # Input graphs (read-only)
+      - ./data/output:/data/output              # Output predictions
+      - ./weights:/app/weights:ro               # Model weights (read-only)
+      - ./scripts:/app/scripts:ro               # Split files
+    
+    # Environment
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - CUDA_VISIBLE_DEVICES=0
+    
+    # Default: run inference with Phikon+GAT
+    command: >
+      python inference.py 
+        --input /data/graphs 
+        --output /data/output/predictions.csv 
+        --model gat
+        --backbone phikon
+
+  # Training service (Graph Transformer)
+  gtp-train:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: gtp-panda:latest
+    container_name: gtp-train
+    
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    
+    volumes:
+      - ./data/graphs:/data/graphs:ro
+      - ./weights:/app/weights
+      - ./logs:/app/logs
+      - ./scripts:/app/scripts:ro
+    
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - CUDA_VISIBLE_DEVICES=0
+    
+    command: >
+      python main.py 
+        --n_class 3 
+        --n_features 768 
+        --data_path /data/graphs/phikon 
+        --train_set /app/scripts/train_set.txt 
+        --val_set /app/scripts/val_set.txt 
+        --model_path /app/weights 
+        --log_path /app/logs 
+        --task_name gtp_phikon 
+        --batch_size 8 
+        --train
+
+  # Training service (GAT)
+  gat-train:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: gtp-panda:latest
+    container_name: gat-train
+    
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    
+    volumes:
+      - ./data/graphs:/data/graphs:ro
+      - ./weights:/app/weights
+      - ./logs:/app/logs
+      - ./scripts:/app/scripts:ro
+    
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - CUDA_VISIBLE_DEVICES=0
+    
+    command: >
+      python main_gat.py 
+        --n_class 3 
+        --n_features 768 
+        --hidden_dim 64 
+        --heads 4 
+        --data_path /data/graphs/phikon 
+        --train_set /app/scripts/train_set.txt 
+        --val_set /app/scripts/val_set.txt 
+        --model_path /app/weights 
+        --log_path /app/logs 
+        --task_name gat_phikon 
+        --batch_size 8 
+        --num_epochs 50 
+        --train
+
+  # Evaluation service
+  evaluate:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: gtp-panda:latest
+    container_name: gtp-evaluate
+    
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    
+    volumes:
+      - ./data/graphs:/data/graphs:ro
+      - ./data/output:/data/output
+      - ./weights:/app/weights:ro
+      - ./scripts:/app/scripts:ro
+    
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    
+    command: python evaluate_gat.py

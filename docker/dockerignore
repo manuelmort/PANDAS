@@ -1,0 +1,65 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info
+.eggs
+*.egg
+.pytest_cache
+.mypy_cache
+
+# Virtual environments
+venv
+env
+.env
+panda_env
+
+# Jupyter
+.ipynb_checkpoints
+*.ipynb
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Data (mount as volumes instead)
+data/
+*.tiff
+*.tif
+*.svs
+tiles_*/
+graphs_*/
+
+# Model weights (mount as volumes)
+*.pth
+*.pt
+*.ckpt
+
+# Logs
+logs/
+runs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large files
+*.zip
+*.tar
+*.gz
+*.h5
+*.hdf5
+
+# Temporary
+tmp/
+temp/
+*.tmp
