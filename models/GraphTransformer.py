@@ -16,7 +16,7 @@ from .gcn import GCNBlock
 from torch_geometric.nn import GCNConv, DenseGraphConv, dense_mincut_pool
 from torch.nn import Linear
 class Classifier(nn.Module):
-    def __init__(self, n_class, n_features: int = 512):
+    def __init__(self, n_class, n_features: int = 512, class_weights=None):
         super(Classifier, self).__init__()
 
         self.embed_dim = 64
@@ -25,15 +25,21 @@ class Classifier(nn.Module):
 
         self.transformer = VisionTransformer(num_classes=n_class, embed_dim=self.embed_dim)
         self.cls_token = nn.Parameter(torch.zeros(1, 1, self.embed_dim))
-        self.criterion = nn.CrossEntropyLoss()
+        
+        # Use class weights if provided
+        if class_weights is not None:
+            self.criterion = nn.CrossEntropyLoss(weight=class_weights)
+            print(f"Classifier initialized with class weights: {class_weights}")
+        else:
+            self.criterion = nn.CrossEntropyLoss()
+            print("Classifier initialized with standard CrossEntropyLoss")
 
         self.bn = 1
         self.add_self = 1
         self.normalize_embedding = 1
-        self.conv1 = GCNBlock(n_features,self.embed_dim,self.bn,self.add_self,self.normalize_embedding,0.,0)       # 64->128
-        self.pool1 = Linear(self.embed_dim, self.node_cluster_num)                                          # 100-> 20
-
-
+        self.conv1 = GCNBlock(n_features,self.embed_dim,self.bn,self.add_self,self.normalize_embedding,0.,0)
+        self.pool1 = Linear(self.embed_dim, self.node_cluster_num)
+        
     def forward(self,node_feat,labels,adj,mask,is_print=False, graphcam_flag=False):
         # node_feat, labels = self.PrepareFeatureLabel(batch_graph)
         cls_loss=node_feat.new_zeros(self.num_layers)
