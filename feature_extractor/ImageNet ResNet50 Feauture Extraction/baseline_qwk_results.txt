@@ -1,0 +1,22 @@
+======================================================================
+GTP BASELINE EVALUATION RESULTS
+======================================================================
+
+Method: Graph Transformer (GTP)
+Backbone: ResNet50 (ImageNet pretrained, frozen)
+Feature Dimension: 2048
+Validation Samples: 2123
+
+★ BASELINE QWK: 0.7254
+  Validation Accuracy: 0.7617 (76.17%)
+  Grade: A
+
+Confusion Matrix:
+         Pred0  Pred1  Pred2
+Actual 0:  457     69     42
+Actual 1:   90    297     99
+Actual 2:   71    135    863
+
+Grade Targets:
+  B+ (5% improvement):  0.7616
+  A (10% improvement):  0.7979
