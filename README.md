@@ -136,36 +136,52 @@ python build_graphs.py
 
 ## 4. Training
 
-Train Graph Transformer with frozen ResNet50 frozen backbone:
+Training scripts are located in the project root directory.
+
+### Graph Transformer (GTP)
 ```bash
-python main.py \
-    --n_class 3 \
-    --n_features 2048 \
-    --data_path './feature_extractor/graphs_all/panda' \
-    --train_set './scripts/train_set.txt' \
-    --val_set './scripts/val_set.txt' \
-    --batch_size 8 \
-    --train \
-    --site panda
-```
-Number of epochs specified in options.py  
-**Training time:** ~2 hours (Expected) 
-**Expected QWK:** 0.42-0.48
+# Train with different backbones by modifying n_features and data_path:
 
-Submitting Batch Job
+# SimCLR (512-dim)
+qsub train_gtp.sh
+
+# ImageNet ResNet50 (2048-dim) - edit train_gtp.sh:
+#   --n_features 2048
+#   --data_path './feature_extractor/graphs_imagenet/panda'
+
+# Phikon (768-dim) - edit train_gtp.sh:
+#   --n_features 768
+#   --data_path './feature_extractor/graphs_phikon/panda'
 ```
-qsub ./train_gtp.sh
+
+### Graph Attention Network (GAT)
+```bash
+qsub train_gat.sh
 ```
-Check Status
-```
+
+### Training Configurations
+
+| Script | Model | Backbone | Features | GPU Memory |
+|--------|-------|----------|----------|------------|
+| `train_gtp.sh` | Graph Transformer | SimCLR | 512 | 40GB |
+| `train_gat.sh` | GAT | Phikon | 768 | 16GB |
+
+### Outputs
+
+- **Models:** `./graph_transformer/saved_models/`
+- **Logs:** `./logs/`
+- **Tensorboard:** `./graph_transformer/runs/`
+
+### Monitor Training
+```bash
+# Check job status
 qstat -u $USER
-```
-Check Output
-```
-./logs
+
+# View training logs
+tail -f logs/gat_train_<JOB_ID>.log
+or using cat to check on the logs.
 ```
 
----
 
 ## 5. Evaluation
 Improvements
